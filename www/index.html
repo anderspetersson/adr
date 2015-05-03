@@ -122,7 +122,7 @@
         }
 
         function addAllSubstances(){
-            $.getJSON( "http://10.0.1.4:8000/api/substances/?format=json", function( data ) {
+            $.getJSON( "substances.json", function( data ) {
                 $.each(data, function(key, val){
                     addTodo(val.title, val.un, val.designation, val.description, val.class_code, val.f_code, val.net_weight, val.tp_cat, val.tunnel_code, val.multifactor, val.substance_type);
                 });
