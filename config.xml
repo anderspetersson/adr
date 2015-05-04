@@ -1,6 +1,6 @@
 <widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" id="com.phonegap.adr" version="1.0.0">
-  <name>Tankning och Laddnings Appen</name>
-  <description>Räknar ut riskpoäng för transport av farligt gods.</description>
+  <name>TOLA</name>
+  <description>Tankning Och Laddnings Appen. Räknar ut riskpoäng för transport av farligt gods.</description>
   <author email="me@anderspetersson.se">Anders Petersson</author>
   <content src="index.html"/>
   <preference name="permissions" value="none"/>
@@ -59,14 +59,14 @@
   <preference name="SplashScreenDelay" value="10000" />
   <platform name="android">
     <allow-intent href="market:*"/>
-    <splash src="res/res-land-hdpi/screen.png" density="land-hdpi"/>
-    <splash src="res/res-land-ldpi/screen.png" density="land-ldpi"/>
-    <splash src="res/res-land-mdpi/screen.png" density="land-mdpi"/>
-    <splash src="res/res-land-xhdpi/screen.png" density="land-xhdpi"/>
-    <splash src="res/res-port-hdpi/screen.png" density="port-hdpi"/>
-    <splash src="res/res-port-ldpi/screen.png" density="port-ldpi"/>
-    <splash src="res/res-port-mdpi/screen.png" density="port-mdpi"/>
-    <splash src="res/res-port-xhdpi/screen.png" density="port-xhdpi"/>
+    <splash src="res/android/screen-hdpi-landscape.png" density="land-hdpi"/>
+    <splash src="res/android/screen-ldpi-landscape.png" density="land-ldpi"/>
+    <splash src="res/android/screen-mdpi-landscape.png" density="land-mdpi"/>
+    <splash src="res/android/screen-xhdpi-landscape.png" density="land-xhdpi"/>
+    <splash src="res/android/screen-hdpi-portrait.png" density="port-hdpi"/>
+    <splash src="res/android/screen-ldpi-portrait.png" density="port-ldpi"/>
+    <splash src="res/android/screen-mdpi-portrait.png" density="port-mdpi"/>
+    <splash src="res/android/screen-xhdpi-portrait.png" density="port-xhdpi"/>
   </platform>
   <platform name="ios">
     <allow-intent href="itms:*"/>
