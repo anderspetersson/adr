@@ -15,8 +15,6 @@
     <script>
     $(document).ready(function() {
 
-        $.ajaxSetup( { "async": false } );
-
         $( "body>[data-role='panel']" ).panel();
 
         var html5rocks = {};
@@ -52,7 +50,7 @@
 
         html5rocks.webdb.onSuccess = function(tx, r) {
           // re-render the data.
-          html5rocks.webdb.getAllTodoItems(loadTodoItems);
+          //html5rocks.webdb.getAllTodoItems(loadTodoItems);
         }
 
 
@@ -64,8 +62,15 @@
           });
         }
 
+        html5rocks.webdb.getLoadedItems = function(renderFunc) {
+          var db = html5rocks.webdb.db;
+          db.transaction(function(tx) {
+            tx.executeSql("SELECT * FROM substances WHERE number <> 0 ORDER BY title DESC", [], renderFunc,
+                html5rocks.webdb.onError);
+          });
+        }
+
         html5rocks.webdb.getSubstanceDetail = function(substanceID, renderDetailFunc){
-            console.log('getSubstanceDetail');
             console.log(substanceID);
             $('#substanceIDinput').val(substanceID);
             var db = html5rocks.webdb.db;
@@ -89,13 +94,31 @@
           for (var i=0; i < rs.rows.length; i++) {
             items += renderTodo(rs.rows.item(i));
           }
-          $('#substancelist').empty();
+          $('#substancelist').append('<li data-role="list-divider">Alla ämnen</li>');
           $('#substancelist').append(items);
           $('#substancelist').listview().listview('refresh');
         }
 
-        function renderTodo(row) {
+        function insertLoadedItems(tx, rs) {
+          items = "";
+          for (var i=0; i < rs.rows.length; i++) {
+            items += renderTodoWithCount(rs.rows.item(i));
+          }
+
+          $('#substancelist').empty();
+          if (items.length != 0){
+            $('#substancelist').append('<li data-role="list-divider">Min last</li>');
+            $('#substancelist').append(items);
+          }
+          
+        }
+
+        function renderTodoWithCount(row) {
           return "<li><a href='#substance?id=" + row.ID + "'>" + row.title + "<span id='substancelist-count-" + row.ID + "' class='ui-li-count'>" + row.number + "</span></a></li>";
+        }
+
+        function renderTodo(row) {
+          return "<li><a href='#substance?id=" + row.ID + "'>" + row.title + "</a></li>";
         }
 
         function loadSubstanceDetail(tx, rs){
@@ -104,9 +127,11 @@
             console.log(substance.number);
             if (substance.number == 0){
                 $('#loadNumber').val('');
+                $('#loadbtn').text('Lasta');
             }
             else{
                 $('#loadNumber').val(substance.number);
+                $('#loadbtn').text('Ändra');
             }
 
             $('#substance h1').text(substance.title);
@@ -136,19 +161,19 @@
                 title, un, m_nummer, description, class_code,
                 f_code, net_weight, tp_cat, tunnel_code, multiplikator, number, substance_type
             );
-            //todo.value = "";
         }
 
         function init() {
           html5rocks.webdb.open();
           html5rocks.webdb.createTable();
           addAllSubstances();
+          $('#substancelist').empty();
+          html5rocks.webdb.getLoadedItems(insertLoadedItems);
           html5rocks.webdb.getAllTodoItems(loadTodoItems);
         }
 
 
         function showSubstanceDetail(substanceID){
-            console.log('showSubstanceDetail');
             html5rocks.webdb.open();
             html5rocks.webdb.createTable();
             html5rocks.webdb.getSubstanceDetail(substanceID, loadSubstanceDetail);
@@ -165,135 +190,147 @@
             }
         );
 
-        init()
+        $.mobile.paramsHandler.init();
 
-        $.mobile.paramsHandler.init()
+        Number.prototype.round = function(places) {
+            return +(Math.round(this + "e+" + places)  + "e-" + places);
+        }
+
+        $('form[name=loadForm]').submit(function(){
+            var html5rocks = {};
+            html5rocks.webdb = {};
+            html5rocks.webdb.db = null;
+
+            html5rocks.webdb.open = function() {
+              var dbSize = 5 * 1024 * 1024; // 5MB
+              html5rocks.webdb.db = openDatabase("Substances", "1.0", "Substance manager", dbSize);
+            }
+
+            html5rocks.webdb.createTable = function() {
+              var db = html5rocks.webdb.db;
+              db.transaction(function(tx) {
+                tx.executeSql("CREATE TABLE IF NOT EXISTS substances(ID INTEGER PRIMARY KEY ASC, title TEXT, un TEXT, m_nummer TEXT, description TEXT, class_code TEXT, f_code TEXT, net_weight NUMERIC(10,6), tp_cat INTEGER, tunnel_code TEXT, multiplikator INTEGER, number INTEGER, substance_type TEXT, UNIQUE(title))", []);
+              });
+            }
+
+            html5rocks.webdb.addSubstanceNumber = function(number, ID) {
+              var db = html5rocks.webdb.db;
+              db.transaction(function(tx){
+                var addedOn = new Date();
+                tx.executeSql("UPDATE substances SET number=(?) WHERE ID=(?)",
+                    [number, ID],
+                    html5rocks.webdb.onSuccess,
+                    html5rocks.webdb.onError);
+               });
+            }
+
+
+            html5rocks.webdb.onError = function(tx, e) {
+              alert("There has been an error: " + e.message);
+            }
+
+            html5rocks.webdb.onSuccess = function(tx, r) {
+              // re-render the data.
+              console.log('success');
+            }
+
+
+            ID = $('#substanceIDinput').val();
+            number = $('#loadNumber').val();
+
+            html5rocks.webdb.open();
+            html5rocks.webdb.createTable();
+            html5rocks.webdb.addSubstanceNumber(number, ID);
+            $('#substancelist-count-' + ID).text(number);
+
+            init();
+            $(":mobile-pagecontainer").pagecontainer( "change", "#index" );
+
+
+            return false;
+        })
+        //function loadSubstance(){
+
+
+        //}
+
+        function showDeclaration(){
+            var html5rocks = {};
+            html5rocks.webdb = {};
+            html5rocks.webdb.db = null;
+
+            html5rocks.webdb.open = function() {
+              var dbSize = 5 * 1024 * 1024; // 5MB
+              html5rocks.webdb.db = openDatabase("Substances", "1.0", "Substance manager", dbSize);
+            }
+
+            html5rocks.webdb.createTable = function() {
+              var db = html5rocks.webdb.db;
+              db.transaction(function(tx) {
+                tx.executeSql("CREATE TABLE IF NOT EXISTS substances(ID INTEGER PRIMARY KEY ASC, title TEXT, un TEXT, m_nummer TEXT, description TEXT, class_code TEXT, f_code TEXT, net_weight NUMERIC(10,6), tp_cat INTEGER, tunnel_code TEXT, multiplikator INTEGER, number INTEGER, substance_type TEXT, UNIQUE(title))", []);
+              });
+            }
+
+            html5rocks.webdb.getAllDeclarationItems = function(renderFunc) {
+              var db = html5rocks.webdb.db;
+              db.transaction(function(tx) {
+                tx.executeSql("SELECT description, class_code, tunnel_code, number, SUM(number*net_weight) as weight, un FROM substances WHERE number <> 0 GROUP BY un", [], renderFunc,
+                    html5rocks.webdb.onError);
+              });
+            }
+
+            html5rocks.webdb.getWeightPerCategory = function(renderFunc) {
+              var db = html5rocks.webdb.db;
+              db.transaction(function(tx) {
+                tx.executeSql("SELECT tp_cat, SUM(number*net_weight) as weight, SUM(net_weight*multiplikator*number) as points FROM substances WHERE number <> 0 GROUP BY tp_cat", [], renderFunc,
+                    html5rocks.webdb.onError);
+              });
+            }
+
+
+
+            function showDeclarationItems(tx, rs){
+                items = "";
+                for (var i=0; i < rs.rows.length; i++) {
+                    items += renderDeclarationItem(rs.rows.item(i));
+                }
+                $('#declarationlist').empty();
+                $('#declarationlist').append(items);
+                $('#declarationlist').listview().listview('refresh');
+            }
+
+            function renderDeclarationItem(row) {
+              return "<li>UN " + row.un + " " + row.description + ", " + row.class_code + ", " + row.tunnel_code +", Nettovikt: " + row.weight.round(2) + " KG</li>";
+            }
+
+            function showWeightPerCategory(tx, rs){
+                items = "";
+                for (var i=0; i < rs.rows.length; i++) {
+                    items += renderWeightPerCategory(rs.rows.item(i));
+                }
+                $('#declarationlist').append(items);
+                $('#declarationlist').listview().listview('refresh');
+            }
+
+            function renderWeightPerCategory(row){
+                return "<li>Transportkategori " + row.tp_cat + ": " + row.weight.round(2) + " KG, " + Math.round(row.points) + " poäng</li>";
+            }
+
+
+            html5rocks.webdb.open();
+            html5rocks.webdb.createTable();
+            html5rocks.webdb.getAllDeclarationItems(showDeclarationItems);
+            html5rocks.webdb.getWeightPerCategory(showWeightPerCategory);
+        }
+
+
+        $(document).on('pagebeforeshow', '#declaration', function(){     
+            showDeclaration();
+        });
+
+        init();
 
     });
-
-    Number.prototype.round = function(places) {
-        return +(Math.round(this + "e+" + places)  + "e-" + places);
-    }
-
-    function loadSubstance(){
-        var html5rocks = {};
-        html5rocks.webdb = {};
-        html5rocks.webdb.db = null;
-
-        html5rocks.webdb.open = function() {
-          var dbSize = 5 * 1024 * 1024; // 5MB
-          html5rocks.webdb.db = openDatabase("Substances", "1.0", "Substance manager", dbSize);
-        }
-
-        html5rocks.webdb.createTable = function() {
-          var db = html5rocks.webdb.db;
-          db.transaction(function(tx) {
-            tx.executeSql("CREATE TABLE IF NOT EXISTS substances(ID INTEGER PRIMARY KEY ASC, title TEXT, un TEXT, m_nummer TEXT, description TEXT, class_code TEXT, f_code TEXT, net_weight NUMERIC(10,6), tp_cat INTEGER, tunnel_code TEXT, multiplikator INTEGER, number INTEGER, substance_type TEXT, UNIQUE(title))", []);
-          });
-        }
-
-        html5rocks.webdb.addSubstanceNumber = function(number, ID) {
-          var db = html5rocks.webdb.db;
-          db.transaction(function(tx){
-            var addedOn = new Date();
-            tx.executeSql("UPDATE substances SET number=(?) WHERE ID=(?)",
-                [number, ID],
-                html5rocks.webdb.onSuccess,
-                html5rocks.webdb.onError);
-           });
-        }
-
-
-        html5rocks.webdb.onError = function(tx, e) {
-          alert("There has been an error: " + e.message);
-        }
-
-        html5rocks.webdb.onSuccess = function(tx, r) {
-          // re-render the data.
-          console.log('success');
-        }
-
-
-        ID = $('#substanceIDinput').val();
-        number = $('#loadNumber').val();
-
-        html5rocks.webdb.open();
-        html5rocks.webdb.createTable();
-        html5rocks.webdb.addSubstanceNumber(number, ID);
-        $('#substancelist-count-' + ID).text(number);
-
-        $(":mobile-pagecontainer").pagecontainer( "change", "#index" );
-        return false;
-    }
-
-    function showDeclaration(){
-        var html5rocks = {};
-        html5rocks.webdb = {};
-        html5rocks.webdb.db = null;
-
-        html5rocks.webdb.open = function() {
-          var dbSize = 5 * 1024 * 1024; // 5MB
-          html5rocks.webdb.db = openDatabase("Substances", "1.0", "Substance manager", dbSize);
-        }
-
-        html5rocks.webdb.createTable = function() {
-          var db = html5rocks.webdb.db;
-          db.transaction(function(tx) {
-            tx.executeSql("CREATE TABLE IF NOT EXISTS substances(ID INTEGER PRIMARY KEY ASC, title TEXT, un TEXT, m_nummer TEXT, description TEXT, class_code TEXT, f_code TEXT, net_weight NUMERIC(10,6), tp_cat INTEGER, tunnel_code TEXT, multiplikator INTEGER, number INTEGER, substance_type TEXT, UNIQUE(title))", []);
-          });
-        }
-
-        html5rocks.webdb.getAllDeclarationItems = function(renderFunc) {
-          var db = html5rocks.webdb.db;
-          db.transaction(function(tx) {
-            tx.executeSql("SELECT description, class_code, tunnel_code, number, SUM(number*net_weight) as weight, un FROM substances WHERE number <> 0 GROUP BY un", [], renderFunc,
-                html5rocks.webdb.onError);
-          });
-        }
-
-        html5rocks.webdb.getWeightPerCategory = function(renderFunc) {
-          var db = html5rocks.webdb.db;
-          db.transaction(function(tx) {
-            tx.executeSql("SELECT tp_cat, SUM(number*net_weight) as weight, SUM(net_weight*multiplikator*number) as points FROM substances WHERE number <> 0 GROUP BY tp_cat", [], renderFunc,
-                html5rocks.webdb.onError);
-          });
-        }
-
-
-
-        function showDeclarationItems(tx, rs){
-            items = "";
-            for (var i=0; i < rs.rows.length; i++) {
-                items += renderDeclarationItem(rs.rows.item(i));
-            }
-            $('#declarationlist').empty();
-            $('#declarationlist').append(items);
-            $('#declarationlist').listview().listview('refresh');
-        }
-
-        function renderDeclarationItem(row) {
-          return "<li>UN " + row.un + " " + row.description + ", " + row.class_code + ", " + row.tunnel_code +", Nettovikt: " + row.weight.round(2) + " KG</li>";
-        }
-
-        function showWeightPerCategory(tx, rs){
-            items = "";
-            for (var i=0; i < rs.rows.length; i++) {
-                items += renderWeightPerCategory(rs.rows.item(i));
-            }
-            $('#declarationlist').append(items);
-            $('#declarationlist').listview().listview('refresh');
-        }
-
-        function renderWeightPerCategory(row){
-            return "<li>Transportkategori " + row.tp_cat + ": " + row.weight.round(2) + " KG, " + Math.round(row.points) + " poäng</li>";
-        }
-
-
-        html5rocks.webdb.open();
-        html5rocks.webdb.createTable();
-        html5rocks.webdb.getAllDeclarationItems(showDeclarationItems)
-        html5rocks.webdb.getWeightPerCategory(showWeightPerCategory)
-    }
 
     </script>
 
@@ -309,7 +346,7 @@
 
     <div role="main" class="ui-content">
         <ul id="substancelist" data-role="listview">
-
+            
         </ul>
     </div><!-- /content -->
 </div><!-- /page -->
@@ -323,10 +360,10 @@
     </div><!-- /header -->
 
     <div role="main" class="ui-content">
-        <form id="loadForm" class="input-group" name="loadForm" onSubmit="return loadSubstance();">
+        <form id="loadForm" class="input-group" name="loadForm">
             <input class="input-lg" id="loadNumber" type="number" placeholder="Antal">
             <input type="hidden" id="substanceIDinput" name="substanceID">
-            <input id="loadbtn" type="submit" class="btn btn-primary btn-block btn-outlined" value="Lasta">
+            <button id="loadbtn" type="submit" class="btn btn-primary btn-block btn-outlined">&nbsp;</button>
         </form>
         <ul id="substancedata" data-role="listview" data-inset="true" class="nowrap">
             <li>UN-nummer: <span id="un"></span></li>

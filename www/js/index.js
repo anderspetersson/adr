@@ -59,9 +59,7 @@ function onDeviceReady(){
 $(document).ready(function() {
 });
 
-    $(document).on('pagebeforeshow', '#declaration', function(){     
-        showDeclaration();
-    });
+
 
     function dd(id){
 
