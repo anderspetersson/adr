@@ -1,4 +1,4 @@
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" id="com.phonegap.adr" version="1.0.1">
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" id="com.phonegap.adr" version="1.0.2">
   <name>TOLA</name>
   <description>Tankning Och Laddnings Appen. Räknar ut riskpoäng för transport av farligt gods.</description>
   <author email="me@anderspetersson.se">Anders Petersson</author>
