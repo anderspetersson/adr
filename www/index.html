@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Page Title</title>
+    <title>TOLA</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" />
     <link rel="stylesheet" href="css/index.css" />
+
     <script src="js/jquery-2.1.3.min.js"></script>
     <script src="js/jquery.mobile-1.4.5.min.js"></script>
     <script src="js/jquery.mobile.paramsHandler-1.4.3.js"></script>
@@ -73,7 +74,6 @@
         }
 
         html5rocks.webdb.getSubstanceDetail = function(substanceID, renderDetailFunc){
-            console.log(substanceID);
             $('#substanceIDinput').val(substanceID);
             var db = html5rocks.webdb.db;
             db.transaction(function(tx){
@@ -126,7 +126,6 @@
         function loadSubstanceDetail(tx, rs){
             
             var substance = rs.rows.item(0);
-            console.log(substance.number);
             if (substance.number == 0){
                 $('#loadNumber').val('');
                 $('#loadbtn').text('Lasta');
@@ -233,7 +232,6 @@
 
             html5rocks.webdb.onSuccess = function(tx, r) {
               // re-render the data.
-              console.log('success');
             }
 
 
@@ -256,17 +254,11 @@
             var sender = $('#declarationsender').val();
             var receiver = $('#declarationreceiver').val();
 
-            console.log(sender);
-            console.log(receiver);
-
             window.localStorage.setItem("sender", sender);
             window.localStorage.setItem("receiver", receiver);
 
             return false;
         });
-
-
-        //}
 
         function showDeclaration(){
             var html5rocks = {};
@@ -309,7 +301,14 @@
                     items += renderDeclarationItem(rs.rows.item(i));
                 }
                 $('#declarationlist').empty();
-                $('#declarationlist').append(items);
+
+                if (items.length != 0){
+                    $('#declarationlist').append(items);
+                }
+                else{
+                    $('#declarationlist').append('<li>Det finns inga lastade ämnen.</li>');
+                }
+
                 $('#declarationlist').listview().listview('refresh');
             }
 
@@ -354,78 +353,76 @@
 </head>
 <body>
 
-<div data-role="page" id="index" data-cache="false">
+    <div data-role="page" id="index" data-cache="false">
 
-    <div data-role="header">
-        <a href="#leftpanel1" data-role="button" data-icon="bars" data-iconpos="notext">Meny</a>
-        <h1>TOLA</h1>
-    </div><!-- /header -->
+        <div data-role="header">
+            <a href="#leftpanel1" data-role="button" data-icon="bars" data-iconpos="notext">Meny</a>
+            <h1>TOLA</h1>
+        </div><!-- /header -->
 
-    <div role="main" class="ui-content">
-        <ul id="substancelist" data-role="listview">
-            
-        </ul>
-    </div><!-- /content -->
-</div><!-- /page -->
+        <div role="main" class="ui-content">
+            <ul id="substancelist" data-role="listview">
+                
+            </ul>
+        </div><!-- /content -->
+    </div><!-- /page -->
 
-<!-- Start of second page -->
-<div data-role="page" id="substance" data-cache="false">
+    <div data-role="page" id="substance" data-cache="false">
 
-    <div data-role="header">
-        <a href="#leftpanel1" data-role="button" data-icon="bars" data-iconpos="notext">Meny</a>
-        <h1></h1>
-    </div><!-- /header -->
-
-    <div role="main" class="ui-content">
-        <form id="loadForm" class="input-group" name="loadForm">
-            <input class="input-lg" id="loadNumber" type="number" placeholder="Antal">
-            <input type="hidden" id="substanceIDinput" name="substanceID">
-            <button id="loadbtn" type="submit" class="btn btn-primary btn-block btn-outlined">&nbsp;</button>
-        </form>
-        <ul id="substancedata" data-role="listview" data-inset="true" class="nowrap">
-            <li>UN-nummer: <span id="un"></span></li>
-            <li>M-nummer: <span id="m_nummer"></span></li>
-            <li>Transportbenämning: <span id="description"></span></li>
-            <li>Klassificeringskod: <span id="class_code"></span></li>
-            <li>F-kod: <span id="f_code"></span></li>
-            <li>Nettovikt: <span id="net_weight"></span></li>
-            <li>Transportkategori: <span id="tp_cat"></span></li>
-            <li>Tunnelkod: <span id="tunnel_code"></span></li>
-            <li>Multiplikator: <span id="multifactor"></span></li>
-        </ul>
-    </div><!-- /content -->
-</div><!-- /page -->
-
-
-<!-- Start of fouth page -->
-<div data-role="page" id="declaration">
-
-    <div data-role="header">
-        <a href="#leftpanel1" data-role="button" data-icon="bars" data-iconpos="notext">Meny</a>
-        <h1>Godsdeklaration</h1>
-        <a href="javascript:$('#declarationprofile').toggle();" data-role="button" data-icon="user" data-iconpos="notext">Avsändare/Mottagare</a>
-    </div><!-- /header -->
-
-    <div role="main" class="ui-content">
-        <div id="declarationprofile">
-            <form id="declarationProfileForm" class="input-group">
-                <label for="declarationsender"><strong>Avsändare:</strong></label>
-                <textarea cols="40" rows="4" id="declarationsender"></textarea>
-                <label for="declarationreceiver"><strong>Mottagare:</strong></label>
-                <textarea cols="40" rows="4" id="declarationreceiver"></textarea>
-            </form>
+        <div data-role="header">
+            <a href="#leftpanel1" data-role="button" data-icon="bars" data-iconpos="notext">Meny</a>
+            <h1></h1>
         </div>
-        <ul id="declarationlist" data-role="listview" class="nowrap">
-        </ul>
-    </div><!-- /content -->
-</div><!-- /page -->
 
-<div data-role="panel" id="leftpanel1" data-position="left" data-display="reveal" data-theme="a">
-        <ul id="menu" data-role="listview" class="nowrap">
-            <li><a href="#declaration">Godsdeklaration</a></li>
-            <li><a href="#index">Ämneslista</a></li>
-        </ul>
-</div><!-- /leftpanel1 -->
+        <div role="main" class="ui-content">
+            <form id="loadForm" class="input-group" name="loadForm">
+                <input class="input-lg" id="loadNumber" type="number" placeholder="Antal">
+                <input type="hidden" id="substanceIDinput" name="substanceID">
+                <button id="loadbtn" type="submit" class="btn btn-primary btn-block btn-outlined">&nbsp;</button>
+            </form>
+            <ul id="substancedata" data-role="listview" data-inset="true" class="nowrap">
+                <li>UN-nummer: <span id="un"></span></li>
+                <li>M-nummer: <span id="m_nummer"></span></li>
+                <li>Transportbenämning: <span id="description"></span></li>
+                <li>Klassificeringskod: <span id="class_code"></span></li>
+                <li>F-kod: <span id="f_code"></span></li>
+                <li>Nettovikt: <span id="net_weight"></span></li>
+                <li>Transportkategori: <span id="tp_cat"></span></li>
+                <li>Tunnelkod: <span id="tunnel_code"></span></li>
+                <li>Multiplikator: <span id="multifactor"></span></li>
+            </ul>
+        </div>
+    </div>
+
+
+    <div data-role="page" id="declaration">
+
+        <div data-role="header">
+            <a href="#leftpanel1" data-role="button" data-icon="bars" data-iconpos="notext">Meny</a>
+            <h1>Godsdeklaration</h1>
+            <a href="javascript:$('#declarationprofile').toggle();" data-role="button" data-icon="user" data-iconpos="notext">Avsändare/Mottagare</a>
+        </div>
+
+        <div role="main" class="ui-content">
+            <div id="declarationprofile">
+                <form id="declarationProfileForm" class="input-group">
+                    <label for="declarationsender"><strong>Avsändare:</strong></label>
+                    <textarea cols="40" rows="4" id="declarationsender"></textarea>
+                    <label for="declarationreceiver"><strong>Mottagare:</strong></label>
+                    <textarea cols="40" rows="4" id="declarationreceiver"></textarea>
+                </form>
+            </div>
+            <ul id="declarationlist" data-role="listview" class="nowrap">
+            </ul>
+        </div>
+    </div>
+
+    <div data-role="panel" id="leftpanel1" data-position="left" data-display="reveal" data-theme="a">
+            <ul id="menu" data-role="listview" class="nowrap">
+                <li><a href="#declaration">Godsdeklaration</a></li>
+                <li><a href="#index">Ämneslista</a></li>
+            </ul>
+    </div>
 
     <script type="text/javascript" src="cordova.js"></script>
     
@@ -434,7 +431,3 @@
     </script>
 </body>
 </html>
-
-
-
-
