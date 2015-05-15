@@ -251,7 +251,19 @@
 
             return false;
         })
-        //function loadSubstance(){
+
+        $('#declarationProfileForm textarea').change(function(){
+            var sender = $('#declarationsender').val();
+            var receiver = $('#declarationreceiver').val();
+
+            console.log(sender);
+            console.log(receiver);
+
+            window.localStorage.setItem("sender", sender);
+            window.localStorage.setItem("receiver", receiver);
+
+            return false;
+        });
 
 
         //}
@@ -323,6 +335,9 @@
             html5rocks.webdb.createTable();
             html5rocks.webdb.getAllDeclarationItems(showDeclarationItems);
             html5rocks.webdb.getWeightPerCategory(showWeightPerCategory);
+
+            $('#declarationsender').text(window.localStorage.getItem("sender"));
+            $('#declarationreceiver').text(window.localStorage.getItem("receiver"));
         }
 
 
@@ -388,9 +403,18 @@
     <div data-role="header">
         <a href="#leftpanel1" data-role="button" data-icon="bars" data-iconpos="notext">Meny</a>
         <h1>Godsdeklaration</h1>
+        <a href="javascript:$('#declarationprofile').toggle();" data-role="button" data-icon="user" data-iconpos="notext">Avsändare/Mottagare</a>
     </div><!-- /header -->
 
     <div role="main" class="ui-content">
+        <div id="declarationprofile">
+            <form id="declarationProfileForm" class="input-group">
+                <label for="declarationsender"><strong>Avsändare:</strong></label>
+                <textarea cols="40" rows="4" id="declarationsender"></textarea>
+                <label for="declarationreceiver"><strong>Mottagare:</strong></label>
+                <textarea cols="40" rows="4" id="declarationreceiver"></textarea>
+            </form>
+        </div>
         <ul id="declarationlist" data-role="listview" class="nowrap">
         </ul>
     </div><!-- /content -->
