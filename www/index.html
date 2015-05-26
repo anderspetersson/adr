@@ -68,7 +68,7 @@
         html5rocks.webdb.getLoadedItems = function(renderFunc) {
           var db = html5rocks.webdb.db;
           db.transaction(function(tx) {
-            tx.executeSql("SELECT * FROM substances WHERE number <> 0 ORDER BY title DESC", [], renderFunc,
+            tx.executeSql("SELECT * FROM substances WHERE number <> 0 ORDER BY title", [], renderFunc,
                 html5rocks.webdb.onError);
           });
         }
