@@ -14,15 +14,6 @@
 
     <script type="text/javascript" src="js/index.js"></script>
     <script>
-
-    $( document ).on( "pageinit", function( event ) {
-      console.log(navigator);
-        if (navigator.userAgent.match(/(iPad|iPhone);.*CPU.*OS 7_\d/i)) {
-          console.log(navigator);
-            $("body").addClass("ios7");
-            $('body').append('<div id="ios7statusbar"/>');
-        }
-    });
     $(document).ready(function() {
       console.log('foo');
         $.ajaxSetup( { "async": false } );
@@ -365,7 +356,7 @@
     <div data-role="page" id="index" data-cache="false">
 
         <div data-role="header">
-            <a href="#leftpanel1" data-role="button" data-icon="bars" data-iconpos="notext">Meny</a>
+            <a href="#index" data-role="button" data-icon="bars" data-iconpos="notext">Meny</a>
             <h1>TOLA</h1>
         </div><!-- /header -->
 
@@ -379,7 +370,7 @@
     <div data-role="page" id="substance" data-cache="false">
 
         <div data-role="header">
-            <a href="#leftpanel1" data-role="button" data-icon="bars" data-iconpos="notext">Meny</a>
+            <a href="#leftpanel1" data-role="button" data-icon="back" data-iconpos="notext">Meny</a>
             <h1></h1>
         </div>
 

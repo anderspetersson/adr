@@ -1,4 +1,4 @@
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" id="com.phonegap.adr" version="1.0.6">
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" id="com.phonegap.adr" version="1.0.6.1">
   <name>TOLA</name>
   <description>Tankning Och Laddnings Appen. Räknar ut riskpoäng för transport av farligt gods.</description>
   <author email="me@anderspetersson.se">Anders Petersson</author>
@@ -45,14 +45,13 @@
   <gap:splash src="res/screen/ios/screen-iphone-portrait.png" gap:platform="ios" width="320" height="480"/>
   <gap:splash src="res/screen/ios/screen-iphone-portrait-2x.png" gap:platform="ios" width="640" height="960"/>
   <gap:splash src="res/screen/ios/screen-iphone-portrait-568h-2x.png" gap:platform="ios" width="640" height="1136"/>
-  <gap:splash src="res/screen/ios/screen-ipad-portrait.png" gap:platform="ios" width="768" height="1024"/>
-  <gap:splash src="res/screen/ios/screen-ipad-landscape.png" gap:platform="ios" width="1024" height="768"/>
+  <splash src="res/icon/ios/icon-72-2x.png" gap:platform="ios" width="144" height="144"/>
+  <splash src="res/icon/ios/icon-72-2x.png" gap:platform="ios" width="144" height="144"/>
   <gap:splash src="res/screen/windows-phone/screen-portrait.jpg" gap:platform="winphone"/>
 
   <access origin="*"/>
   <plugin name="cordova-plugin-whitelist" version="1"/>
   <plugin name="com.phonegap.plugin.statusbar" spec="1.1.0" source="pgb" />
-  <preference name="ios-statusbarstyle" value="black-opaque" />
   <preference name="StatusBarOverlaysWebView" value="false" />
   <allow-intent href="http://*/*"/>
   <allow-intent href="https://*/*"/>
